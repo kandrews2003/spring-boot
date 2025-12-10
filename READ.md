@@ -15,8 +15,8 @@ JDK 17+
 Maven 3.8+ (comes with most Spring Boot installations)
 A terminal or IDE such as IntelliJ IDEA
 
-# Build the project
+# To Build the project
 mvn clean package
 
-# Run the Spring Boot app
+# To Run the Spring Boot app
 mvn spring-boot:run
