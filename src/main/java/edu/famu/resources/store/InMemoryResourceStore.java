@@ -1,6 +1,8 @@
 package edu.famu.resources.store;
 
 import edu.famu.resources.dto.ResourceDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -9,12 +11,14 @@ import java.util.stream.Collectors;
 @Component
 public class InMemoryResourceStore {
 
+    private static final Logger log = LoggerFactory.getLogger(InMemoryResourceStore.class);
+
     private final Map<String, ResourceDTO> byId = new HashMap<>();
     private final List<ResourceDTO> all = new ArrayList<>();
 
     public InMemoryResourceStore() {
         // Seed data
-        add(new ResourceDTO("1", "Math Tutoring Center", "Tutoring", "Building A, Room 101",
+        add(new ResourceDTO("1", "Math Lab", "Tutoring", "Coleman Library",
                 "https://famu.edu/tutoring", List.of("math", "study", "help")));
         add(new ResourceDTO("2", "CS Advising Office", "Advising", "Building B, Room 202",
                 "https://famu.edu/advising", List.of("computer science", "advisor")));
@@ -25,7 +29,8 @@ public class InMemoryResourceStore {
         add(new ResourceDTO("5", "Career Services", "Advising", "Student Center",
                 "https://famu.edu/career", List.of("jobs", "resume", "internships")));
 
-        System.out.println("[INFO] Seeded " + all.size() + " campus resources.");
+        // Rubric: INFO at startup with seed count
+        log.info("Seeded {} campus resources into InMemoryResourceStore", all.size());
     }
 
     private void add(ResourceDTO r) {
@@ -34,7 +39,7 @@ public class InMemoryResourceStore {
     }
 
     public List<ResourceDTO> findAll() {
-        return List.copyOf(all);
+        return List.copyOf(all); // unmodifiable copy
     }
 
     public Optional<ResourceDTO> findById(String id) {
@@ -43,66 +48,26 @@ public class InMemoryResourceStore {
 
     public List<ResourceDTO> findByFilters(Optional<String> category, Optional<String> q) {
         return all.stream()
-                .filter(r -> category.map(c -> r.category().equalsIgnoreCase(c)).orElse(true))
-                .filter(r -> q.map(query -> matchesQuery(r, query)).orElse(true))
+                .filter(r -> category
+                        .map(c -> r.category() != null && r.category().equalsIgnoreCase(c))
+                        .orElse(true)
+                )
+                .filter(r -> q
+                        .map(query -> matchesQuery(r, query))
+                        .orElse(true)
+                )
                 .collect(Collectors.toList());
     }
 
     private boolean matchesQuery(ResourceDTO r, String query) {
         String qLower = query.toLowerCase();
-        return r.name().toLowerCase().contains(qLower)
-                || r.tags().stream().anyMatch(tag -> tag.toLowerCase().contains(qLower));
+        boolean inName = r.name() != null && r.name().toLowerCase().contains(qLower);
+        boolean inTags = r.tags() != null &&
+                r.tags().stream()
+                        .filter(Objects::nonNull)
+                        .map(String::toLowerCase)
+                        .anyMatch(tag -> tag.contains(qLower));
+
+        return inName || inTags;
     }
-
-
-    public ResourceDTO save(ResourceDTO dto) {
-        String newId = String.valueOf(all.size() + 1);
-        ResourceDTO newResource = new ResourceDTO(
-                newId,
-                dto.name(),
-                dto.category(),
-                dto.location(),
-                dto.url(),
-                dto.tags()
-        );
-        byId.put(newId, newResource);
-        all.add(newResource);
-        System.out.println("[INFO] Added new resource: " + newResource.name());
-        return newResource;
-    }
-
-
-    public Optional<ResourceDTO> update(String id, ResourceDTO dto) {
-        Optional<ResourceDTO> existing = findById(id);
-        if (existing.isEmpty()) return Optional.empty();
-
-        ResourceDTO updated = new ResourceDTO(
-                id,
-                dto.name(),
-                dto.category(),
-                dto.location(),
-                dto.url(),
-                dto.tags()
-        );
-
-
-        byId.put(id, updated);
-        all.removeIf(r -> r.id().equals(id));
-        all.add(updated);
-
-        System.out.println("[INFO] Updated resource: " + updated.name());
-        return Optional.of(updated);
-    }
-
-
-    public boolean delete(String id) {
-        ResourceDTO removed = byId.remove(id);
-        if (removed != null) {
-            all.removeIf(r -> r.id().equals(id));
-            System.out.println("[INFO] Deleted resource with ID: " + id);
-            return true;
-        }
-        return false;
-    }
-
 }
