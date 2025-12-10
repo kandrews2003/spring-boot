@@ -8,6 +8,6 @@ class ResourcesApplicationTests {
 
     @Test
     void contextLoads() {
+        // This just verifies that the Spring context starts successfully.
     }
-
 }

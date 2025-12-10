@@ -20,14 +20,14 @@ public class InMemoryResourceStore {
         // Seed data
         add(new ResourceDTO("1", "Math Lab", "Tutoring", "Coleman Library",
                 "https://famu.edu/tutoring", List.of("math", "study", "help")));
-        add(new ResourceDTO("2", "CS Advising Office", "Advising", "Building B, Room 202",
-                "https://famu.edu/advising", List.of("computer science", "advisor")));
+        add(new ResourceDTO("2", "Counseling Services", "Counseling", "CASS Building",
+                "https://www.famu.edu/students/student-resources/health-and-wellbeing/counseling-services/index.php", List.of("mental", "psychiatrist")));
         add(new ResourceDTO("3", "Engineering Lab", "Lab", "Tech Hall 305",
                 "https://famu.edu/lab", List.of("engineering", "hardware")));
-        add(new ResourceDTO("4", "Writing Center", "Tutoring", "Library 2nd Floor",
-                "https://famu.edu/writing", List.of("english", "essays", "writing")));
-        add(new ResourceDTO("5", "Career Services", "Advising", "Student Center",
-                "https://famu.edu/career", List.of("jobs", "resume", "internships")));
+        add(new ResourceDTO("4", "Writing Lab", "Writing", "SBI, Floor 2",
+                "https://www.famu.edu/students/student-resources/writing-resource-center/index.php", List.of("english", "essays", "writing")));
+        add(new ResourceDTO("5", "CS Advising Office", "Advising", "Building B",
+                "https://famu.edu/advising", List.of("computer science", "advisor")));
 
         // Rubric: INFO at startup with seed count
         log.info("Seeded {} campus resources into InMemoryResourceStore", all.size());

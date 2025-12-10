@@ -29,6 +29,6 @@ class ResourcesControllerTest {
     void getResourceById_ReturnsCorrectResource() throws Exception {
         mockMvc.perform(get("/api/resources/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Math Tutoring Center"));
+                .andExpect(jsonPath("$.name").value("Math Lab"));
     }
 }
