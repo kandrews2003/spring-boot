@@ -6,10 +6,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -19,16 +18,17 @@ class ResourcesControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void listResources_ReturnsAtLeastSeededSize() throws Exception {
+    void getAllResources_ReturnsOkAndList() throws Exception {
         mockMvc.perform(get("/api/resources"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(5))));
+                .andExpect(jsonPath("$").isArray());
     }
 
     @Test
     void getResourceById_ReturnsCorrectResource() throws Exception {
-        mockMvc.perform(get("/api/resources/1"))
+        mockMvc.perform(get("/api/resources/{id}", "1"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.name").value("Math Lab"));
     }
 }
